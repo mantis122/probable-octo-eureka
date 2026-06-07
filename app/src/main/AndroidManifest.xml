@@ -1,10 +1,21 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <application android:theme="@style/AppTheme" android:label="Color Cottage" android:allowBackup="false" android:supportsRtl="true">
-        <activity android:name=".MainActivity" android:screenOrientation="portrait" android:exported="true">
+
+    <application
+        android:theme="@style/AppTheme"
+        android:label="Color Cottage"
+        android:allowBackup="false"
+        android:supportsRtl="true">
+
+        <activity
+            android:name="com.colorcottage.app.MainActivity"
+            android:exported="true">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
     </application>
+
 </manifest>
