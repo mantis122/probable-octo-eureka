@@ -6,7 +6,6 @@ import android.graphics.*
 import android.view.MotionEvent
 import android.view.View
 import android.widget.*
-import androidx.compose.ui.viewinterop.AndroidView
 
 class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
