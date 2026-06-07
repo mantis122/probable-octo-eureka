@@ -4,14 +4,24 @@ plugins {
 }
 
 android {
-    namespace = "com.colorcottage.app"
+   namespace = "com.example.coloringapp"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.colorcottage.app"
-        minSdk = 24
+        applicationId = "com.example.coloringapp"
+        minSdk = 23
         targetSdk = 35
         versionCode = 1
         versionName = "0.1"
     }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+}
+
+
+kotlin {
+    jvmToolchain(17)
 }
