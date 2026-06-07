@@ -6,6 +6,7 @@ import android.graphics.*
 import android.view.MotionEvent
 import android.view.View
 import android.widget.*
+import androidx.compose.ui.viewinterop.AndroidView
 
 class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,9 +54,16 @@ class MainActivity : Activity() {
         buttons.addView(clear)
 
         tools.addView(palette)
-        tools.addView(buttons)
-        root.addView(title)
-        root.addView(canvas, LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f)
+        tools.addView(buttons)  
+        root.addView(title)  
+        root.addView(
+    canvas,
+    LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams.MATCH_PARENT,
+        0,
+        1f
+    )
+)
         root.addView(tools)
         setContentView(root)
     }
