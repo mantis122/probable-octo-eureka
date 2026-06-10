@@ -1,5 +1,6 @@
 package com.colorcottage.app
 
+import com.colorcottage.app.R
 import android.app.*
 import android.os.*
 import android.provider.MediaStore
