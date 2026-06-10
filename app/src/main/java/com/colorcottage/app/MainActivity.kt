@@ -257,7 +257,8 @@ class ColoringCanvas(
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         if (w <= 0 || h <= 0) return
 
-        lineArtBitmap = BitmapFactory.decodeResource(resources, page.imageRes)
+        val rawLineArt = BitmapFactory.decodeResource(resources, page.imageRes)
+        lineArtBitmap = makeWhiteTransparent(rawLineArt)
         colorBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
         colorCanvas = Canvas(colorBitmap!!)
 
@@ -278,6 +279,27 @@ class ColoringCanvas(
         }
 
         drawPage(canvas)
+    }
+
+    private fun makeWhiteTransparent(source: Bitmap): Bitmap {
+        val output = source.copy(Bitmap.Config.ARGB_8888, true)
+
+        for (y in 0 until output.height) {
+            for (x in 0 until output.width) {
+                val pixel = output.getPixel(x, y)
+                val r = Color.red(pixel)
+                val g = Color.green(pixel)
+                val b = Color.blue(pixel)
+
+                if (r > 220 && g > 220 && b > 220) {
+                    output.setPixel(x, y, Color.TRANSPARENT)
+               } else {
+                output.setPixel(x, y, Color.BLACK)
+                }
+            }
+        }
+
+        return output
     }
 
     private fun drawPage(canvas: Canvas) {
