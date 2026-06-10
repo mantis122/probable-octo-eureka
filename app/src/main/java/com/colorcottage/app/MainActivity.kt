@@ -387,45 +387,48 @@ class ColoringCanvas(
     }
 
     private fun bucketFill(startX: Int, startY: Int, newColor: Int) {
-        val bitmap = colorBitmap ?: return
+    val bitmap = colorBitmap ?: return
 
-        if (startX !in 0 until width || startY !in 0 until height) return
+    if (startX !in 0 until width || startY !in 0 until height) return
 
-        val boundary = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-        val boundaryCanvas = Canvas(boundary)
-        boundaryCanvas.drawColor(Color.WHITE)
-        drawPage(boundaryCanvas)
+    val boundary = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+    val boundaryCanvas = Canvas(boundary)
+    boundaryCanvas.drawColor(Color.WHITE)
+    drawPage(boundaryCanvas)
 
-        val targetColor = bitmap.getPixel(startX, startY)
+    if (isBlackLine(boundary.getPixel(startX, startY))) return
 
-        if (targetColor == newColor) return
-        if (isBlackLine(boundary.getPixel(startX, startY))) return
+    val targetColor = bitmap.getPixel(startX, startY)
+    if (targetColor == newColor) return
 
-        val queue: ArrayDeque<Point> = ArrayDeque()
-        queue.add(Point(startX, startY))
+    val queue: ArrayDeque<Point> = ArrayDeque()
+    queue.add(Point(startX, startY))
 
-        while (queue.isNotEmpty()) {
-            val p = queue.removeFirst()
+    while (queue.isNotEmpty()) {
+        val p = queue.removeFirst()
 
-            if (p.x !in 0 until width || p.y !in 0 until height) continue
-            if (isBlackLine(boundary.getPixel(p.x, p.y))) continue
-            if (bitmap.getPixel(p.x, p.y) != targetColor) continue
+        if (p.x !in 0 until width || p.y !in 0 until height) continue
+        if (isBlackLine(boundary.getPixel(p.x, p.y))) continue
+        if (bitmap.getPixel(p.x, p.y) != targetColor) continue
 
-            bitmap.setPixel(p.x, p.y, newColor)
+        bitmap.setPixel(p.x, p.y, newColor)
 
-            queue.add(Point(p.x + 1, p.y))
-            queue.add(Point(p.x - 1, p.y))
-            queue.add(Point(p.x, p.y + 1))
-            queue.add(Point(p.x, p.y - 1))
-        }
+        queue.add(Point(p.x + 1, p.y))
+        queue.add(Point(p.x - 1, p.y))
+        queue.add(Point(p.x, p.y + 1))
+        queue.add(Point(p.x, p.y - 1))
     }
+}
 
     private fun isBlackLine(pixel: Int): Boolean {
-        val r = Color.red(pixel)
-        val g = Color.green(pixel)
-        val b = Color.blue(pixel)
-        return r < 80 && g < 80 && b < 80
-    }
+    if (Color.alpha(pixel) == 0) return false
+
+    val r = Color.red(pixel)
+    val g = Color.green(pixel)
+    val b = Color.blue(pixel)
+
+    return r < 100 && g < 100 && b < 100
+}
 
     private fun saveUndoState() {
         val bitmap = colorBitmap ?: return
