@@ -35,7 +35,7 @@ class MainActivity : Activity() {
 
     val root = LinearLayout(this).apply {
     orientation = LinearLayout.VERTICAL
-    setPadding(24, 36, 24, 120)
+    setPadding(24, 36, 24, 24)
     setBackgroundColor(Color.rgb(255, 248, 235))
     }
 
@@ -166,8 +166,10 @@ class MainActivity : Activity() {
         toolRow.addView(medium)
         toolRow.addView(large)
 
-        val actionRow = LinearLayout(this).apply { gravity = Gravity.CENTER }
-
+        val actionRow = LinearLayout(this).apply {
+    gravity = Gravity.CENTER
+    setPadding(0, 0, 0, 100)
+}
         val back = Button(this).apply {
             text = "Pages"
             setOnClickListener {
