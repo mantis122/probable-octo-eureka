@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-   namespace = "com.example.coloringapp"
+   namespace = "com.colorcottage.app"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.coloringapp"
+        applicationId = "com.colorcpttage.app"
         minSdk = 23
         targetSdk = 35
         versionCode = 1
