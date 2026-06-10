@@ -31,32 +31,65 @@ class MainActivity : Activity() {
     }
 
     private fun showGallery() {
-        val root = LinearLayout(this).apply {
+    val scroll = ScrollView(this)
+
+    val root = LinearLayout(this).apply {
+        orientation = LinearLayout.VERTICAL
+        setPadding(24, 36, 24, 24)
+        setBackgroundColor(Color.rgb(255, 248, 235))
+    }
+
+    root.addView(TextView(this).apply {
+        text = "Color Cottage"
+        textSize = 34f
+        gravity = Gravity.CENTER
+        setTextColor(Color.rgb(70, 50, 40))
+        setPadding(0, 0, 0, 24)
+    })
+
+    ColoringPage.values().forEach { page ->
+        val card = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(24, 36, 24, 24)
-            setBackgroundColor(Color.rgb(255, 248, 235))
+            gravity = Gravity.CENTER
+            setPadding(16, 16, 16, 16)
+            setBackgroundColor(Color.WHITE)
+            setOnClickListener {
+                currentPage = page
+                showColoringPage()
+            }
         }
 
-        root.addView(TextView(this).apply {
-            text = "Color Cottage"
-            textSize = 32f
+        val thumbnail = ImageView(this).apply {
+            setImageResource(page.imageRes)
+            scaleType = ImageView.ScaleType.FIT_CENTER
+            adjustViewBounds = true
+            setBackgroundColor(Color.WHITE)
+        }
+
+        card.addView(thumbnail, LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            420
+        ))
+
+        card.addView(TextView(this).apply {
+            text = page.title
+            textSize = 24f
             gravity = Gravity.CENTER
             setTextColor(Color.rgb(70, 50, 40))
+            setPadding(0, 12, 0, 0)
         })
 
-        ColoringPage.values().forEach { page ->
-            root.addView(Button(this).apply {
-                text = page.title
-                textSize = 22f
-                setOnClickListener {
-                    currentPage = page
-                    showColoringPage()
-                }
-            })
-        }
-
-        setContentView(root)
+        root.addView(card, LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        ).apply {
+            setMargins(0, 0, 0, 24)
+        })
     }
+
+    scroll.addView(root)
+    setContentView(scroll)
+}
 
     private fun showColoringPage() {
         val root = LinearLayout(this).apply {
