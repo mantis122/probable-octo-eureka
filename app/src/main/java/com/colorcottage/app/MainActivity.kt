@@ -34,9 +34,9 @@ class MainActivity : Activity() {
     val scroll = ScrollView(this)
 
     val root = LinearLayout(this).apply {
-        orientation = LinearLayout.VERTICAL
-        setPadding(24, 36, 24, 24)
-        setBackgroundColor(Color.rgb(255, 248, 235))
+    orientation = LinearLayout.VERTICAL
+    setPadding(24, 36, 24, 120)
+    setBackgroundColor(Color.rgb(255, 248, 235))
     }
 
     root.addView(TextView(this).apply {
