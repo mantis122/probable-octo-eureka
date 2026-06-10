@@ -13,15 +13,16 @@ import java.util.ArrayDeque
 
 class MainActivity : Activity() {
     private lateinit var canvas: ColoringCanvas
-    private var currentPage = ColoringPage.CIRCLE
+    private var currentPage = ColoringPage.PUPPY
 
-    enum class ColoringPage(val title: String) {
-        CIRCLE("Circle"),
-        HOUSE("House"),
-        FLOWER("Flower"),
-        ROCKET("Rocket"),
-        EGG("Dino Egg")
-    }
+    enum class ColoringPage(val title: String, val imageRes: Int) {
+    PUPPY("Puppy", R.drawable.animal_puppy),
+    KITTEN("Kitten", R.drawable.animal_kitten),
+    BUNNY("Bunny", R.drawable.animal_bunny),
+    DUCKLING("Duckling", R.drawable.animal_duckling),
+    PONY("Pony", R.drawable.animal_pony),
+    DINOSAUR("Baby Dinosaur", R.drawable.animal_dinosaur)
+}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -214,6 +215,9 @@ class ColoringCanvas(
     private val page: MainActivity.ColoringPage
 ) : View(appContext) {
 
+    private var lineArtBitmap: Bitmap? = null
+    private val imageRect = RectF()
+
     enum class Tool {
         BRUSH,
         BUCKET
@@ -252,6 +256,7 @@ class ColoringCanvas(
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         if (w <= 0 || h <= 0) return
 
+        lineArtBitmap = BitmapFactory.decodeResource(resources, page.imageRes)
         colorBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
         colorCanvas = Canvas(colorBitmap!!)
 
@@ -275,68 +280,31 @@ class ColoringCanvas(
     }
 
     private fun drawPage(canvas: Canvas) {
-        val w = width.toFloat()
-        val h = height.toFloat()
-        val cx = w / 2f
-        val cy = h / 2f
+    val bitmap = lineArtBitmap ?: return
 
-        when (page) {
-            MainActivity.ColoringPage.CIRCLE -> {
-                canvas.drawCircle(cx, cy, minOf(w, h) / 3f, linePaint)
-                canvas.drawRect(32f, 32f, w - 32f, h - 32f, linePaint)
-            }
+    val viewW = width.toFloat()
+    val viewH = height.toFloat()
+    val bitmapRatio = bitmap.width.toFloat() / bitmap.height.toFloat()
+    val viewRatio = viewW / viewH
 
-            MainActivity.ColoringPage.HOUSE -> {
-                val house = Path().apply {
-                    moveTo(cx - 180, cy)
-                    lineTo(cx, cy - 180)
-                    lineTo(cx + 180, cy)
-                    close()
-                }
-                canvas.drawPath(house, linePaint)
-                canvas.drawRect(cx - 140, cy, cx + 140, cy + 220, linePaint)
-                canvas.drawRect(cx - 45, cy + 90, cx + 45, cy + 220, linePaint)
-                canvas.drawRect(cx - 110, cy + 40, cx - 50, cy + 100, linePaint)
-                canvas.drawRect(cx + 50, cy + 40, cx + 110, cy + 100, linePaint)
-            }
+    val drawW: Float
+    val drawH: Float
 
-            MainActivity.ColoringPage.FLOWER -> {
-                for (i in 0 until 8) {
-                    val angle = Math.toRadians((i * 45).toDouble())
-                    val px = cx + Math.cos(angle).toFloat() * 95f
-                    val py = cy - 80 + Math.sin(angle).toFloat() * 95f
-                    canvas.drawCircle(px, py, 60f, linePaint)
-                }
-                canvas.drawCircle(cx, cy - 80, 60f, linePaint)
-                canvas.drawLine(cx, cy - 20, cx, cy + 250, linePaint)
-                canvas.drawCircle(cx - 60, cy + 120, 45f, linePaint)
-                canvas.drawCircle(cx + 60, cy + 160, 45f, linePaint)
-            }
-
-            MainActivity.ColoringPage.ROCKET -> {
-                val rocket = Path().apply {
-                    moveTo(cx, cy - 260)
-                    lineTo(cx - 100, cy - 60)
-                    lineTo(cx - 80, cy + 160)
-                    lineTo(cx + 80, cy + 160)
-                    lineTo(cx + 100, cy - 60)
-                    close()
-                }
-                canvas.drawPath(rocket, linePaint)
-                canvas.drawCircle(cx, cy - 80, 45f, linePaint)
-                canvas.drawLine(cx - 80, cy + 160, cx - 150, cy + 260, linePaint)
-                canvas.drawLine(cx + 80, cy + 160, cx + 150, cy + 260, linePaint)
-            }
-
-            MainActivity.ColoringPage.EGG -> {
-                val egg = RectF(cx - 160, cy - 230, cx + 160, cy + 230)
-                canvas.drawOval(egg, linePaint)
-                canvas.drawCircle(cx - 70, cy - 40, 35f, linePaint)
-                canvas.drawCircle(cx + 70, cy - 20, 35f, linePaint)
-                canvas.drawCircle(cx, cy + 80, 45f, linePaint)
-            }
-        }
+    if (bitmapRatio > viewRatio) {
+        drawW = viewW
+        drawH = viewW / bitmapRatio
+    } else {
+        drawH = viewH
+        drawW = viewH * bitmapRatio
     }
+
+    val left = (viewW - drawW) / 2f
+    val top = (viewH - drawH) / 2f
+
+    imageRect.set(left, top, left + drawW, top + drawH)
+
+    canvas.drawBitmap(bitmap, null, imageRect, null)
+}
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         val x = event.x
