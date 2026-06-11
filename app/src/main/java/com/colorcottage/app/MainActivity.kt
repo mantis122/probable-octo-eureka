@@ -31,38 +31,52 @@ class MainActivity : Activity() {
     }
 
 private fun makeGalleryThumbnail(page: ColoringPage): Bitmap {
-    val lineArt = BitmapFactory.decodeResource(resources, page.imageRes)
-        .copy(Bitmap.Config.ARGB_8888, true)
+    val progressFile = File(filesDir, "progress_${page.name}.png")
+    val savedProgress = if (progressFile.exists()) {
+        BitmapFactory.decodeFile(progressFile.absolutePath)
+    } else {
+        null
+    }
+
+    val outputWidth = savedProgress?.width ?: 900
+    val outputHeight = savedProgress?.height ?: 1200
 
     val combined = Bitmap.createBitmap(
-        lineArt.width,
-        lineArt.height,
+        outputWidth,
+        outputHeight,
         Bitmap.Config.ARGB_8888
     )
 
     val canvas = Canvas(combined)
-
     canvas.drawColor(Color.WHITE)
 
-    canvas.drawBitmap(lineArt, 0f, 0f, null)
-
-    val progressFile = File(filesDir, "progress_${page.name}.png")
-
-    if (progressFile.exists()) {
-        val progress = BitmapFactory.decodeFile(progressFile.absolutePath)
-
-        if (progress != null) {
-            val scaledProgress = Bitmap.createScaledBitmap(
-                progress,
-                lineArt.width,
-                lineArt.height,
-                true
-            )
-
-            canvas.drawBitmap(scaledProgress, 0f, 0f, null)
-            canvas.drawBitmap(lineArt, 0f, 0f, null)
-        }
+    savedProgress?.let {
+        canvas.drawBitmap(it, 0f, 0f, null)
     }
+
+    val rawLineArt = BitmapFactory.decodeResource(resources, page.imageRes)
+    val lineArt = makeWhiteTransparent(rawLineArt)
+
+    val bitmapRatio = lineArt.width.toFloat() / lineArt.height.toFloat()
+    val viewRatio = outputWidth.toFloat() / outputHeight.toFloat()
+
+    val drawW: Float
+    val drawH: Float
+
+    if (bitmapRatio > viewRatio) {
+        drawW = outputWidth.toFloat()
+        drawH = outputWidth / bitmapRatio
+    } else {
+        drawH = outputHeight.toFloat()
+        drawW = outputHeight * bitmapRatio
+    }
+
+    val left = (outputWidth - drawW) / 2f
+    val top = (outputHeight - drawH) / 2f
+
+    val rect = RectF(left, top, left + drawW, top + drawH)
+
+    canvas.drawBitmap(lineArt, null, rect, null)
 
     return combined
 }
