@@ -112,7 +112,20 @@ private fun makeGalleryThumbnail(page: ColoringPage): Bitmap {
         }
 
         val thumbnail = ImageView(this).apply {
-    setImageBitmap(makeGalleryThumbnail(page))
+
+    val progressFile = File(
+        filesDir,
+        "progress_${page.name}.png"
+    )
+
+    if (progressFile.exists()) {
+        setImageBitmap(
+            BitmapFactory.decodeFile(progressFile.absolutePath)
+        )
+    } else {
+        setImageResource(page.imageRes)
+    }
+
     scaleType = ImageView.ScaleType.FIT_CENTER
     adjustViewBounds = true
     setBackgroundColor(Color.WHITE)
