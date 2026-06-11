@@ -235,7 +235,7 @@ card.addView(TextView(this).apply {
         }
 
 val previous = Button(this).apply {
-    text = "←"
+    text = "Prev"
     setOnClickListener {
         canvas.saveProgress()
         val pages = ColoringPage.values()
@@ -246,7 +246,7 @@ val previous = Button(this).apply {
 }
 
 val next = Button(this).apply {
-    text = "→"
+    text = "Next"
     setOnClickListener {
         canvas.saveProgress()
         val pages = ColoringPage.values()
@@ -260,7 +260,6 @@ val next = Button(this).apply {
 actionRow.addView(back)
 actionRow.addView(undo)
 actionRow.addView(clear)
-actionRow.addView(save)
 actionRow.addView(next)
         root.addView(title)
         root.addView(canvas, LinearLayout.LayoutParams(
