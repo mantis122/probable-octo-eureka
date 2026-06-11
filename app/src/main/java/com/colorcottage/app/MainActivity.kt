@@ -30,6 +30,43 @@ class MainActivity : Activity() {
         showGallery()
     }
 
+private fun makeGalleryThumbnail(page: ColoringPage): Bitmap {
+    val lineArt = BitmapFactory.decodeResource(resources, page.imageRes)
+        .copy(Bitmap.Config.ARGB_8888, true)
+
+    val progressFile = File(filesDir, "progress_${page.name}.png")
+
+    if (!progressFile.exists()) {
+        return lineArt
+    }
+
+    val progress = BitmapFactory.decodeFile(progressFile.absolutePath)
+        ?: return lineArt
+
+    val scaledProgress = Bitmap.createScaledBitmap(
+        progress,
+        lineArt.width,
+        lineArt.height,
+        true
+    )
+
+    val combined = Bitmap.createBitmap(
+        lineArt.width,
+        lineArt.height,
+        Bitmap.Config.ARGB_8888
+    )
+
+    val canvas = Canvas(combined)
+
+    // Draw the child's coloring first
+    canvas.drawBitmap(scaledProgress, 0f, 0f, null)
+
+    // Draw the black line art on top
+    canvas.drawBitmap(lineArt, 0f, 0f, null)
+
+    return combined
+}
+
     private fun showGallery() {
     val scroll = ScrollView(this)
 
@@ -60,11 +97,11 @@ class MainActivity : Activity() {
         }
 
         val thumbnail = ImageView(this).apply {
-            setImageResource(page.imageRes)
-            scaleType = ImageView.ScaleType.FIT_CENTER
-            adjustViewBounds = true
-            setBackgroundColor(Color.WHITE)
-        }
+    setImageBitmap(makeGalleryThumbnail(page))
+    scaleType = ImageView.ScaleType.FIT_CENTER
+    adjustViewBounds = true
+    setBackgroundColor(Color.WHITE)
+}
 
         card.addView(thumbnail, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
@@ -166,8 +203,10 @@ class MainActivity : Activity() {
         toolRow.addView(medium)
         toolRow.addView(large)
 
-        val actionRow = LinearLayout(this).apply { gravity = Gravity.CENTER }
-
+        val actionRow = LinearLayout(this).apply {
+    gravity = Gravity.CENTER
+    setPadding(0, 0, 0, 140)
+}
         val back = Button(this).apply {
             text = "Pages"
             setOnClickListener {
