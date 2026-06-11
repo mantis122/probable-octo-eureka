@@ -103,6 +103,16 @@ private fun makeWhiteTransparent(source: Bitmap): Bitmap {
             setPadding(0, 12, 0, 0)
         })
 
+val progressFile = File(filesDir, "progress_${page.name}.png")
+
+card.addView(TextView(this).apply {
+    text = if (progressFile.exists()) "Started" else "Not started"
+    textSize = 16f
+    gravity = Gravity.CENTER
+    setTextColor(Color.rgb(120, 100, 90))
+    setPadding(0, 4, 0, 0)
+})
+
         root.addView(card, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
