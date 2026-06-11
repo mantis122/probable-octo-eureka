@@ -234,11 +234,34 @@ card.addView(TextView(this).apply {
             setOnClickListener { saveCanvasToGallery() }
         }
 
-        actionRow.addView(back)
-        actionRow.addView(undo)
-        actionRow.addView(clear)
-        actionRow.addView(save)
+val previous = Button(this).apply {
+    text = "←"
+    setOnClickListener {
+        canvas.saveProgress()
+        val pages = ColoringPage.values()
+        val index = pages.indexOf(currentPage)
+        currentPage = pages[(index - 1 + pages.size) % pages.size]
+        showColoringPage()
+    }
+}
 
+val next = Button(this).apply {
+    text = "→"
+    setOnClickListener {
+        canvas.saveProgress()
+        val pages = ColoringPage.values()
+        val index = pages.indexOf(currentPage)
+        currentPage = pages[(index + 1) % pages.size]
+        showColoringPage()
+    }
+}
+
+ actionRow.addView(previous)
+actionRow.addView(back)
+actionRow.addView(undo)
+actionRow.addView(clear)
+actionRow.addView(save)
+actionRow.addView(next)
         root.addView(title)
         root.addView(canvas, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
