@@ -83,7 +83,7 @@ private fun makeGalleryThumbnail(page: ColoringPage): Bitmap {
     canvas.drawBitmap(lineArt, 0f, 0f, null)
 
     return output
-}}
+}
 
 private fun makeWhiteTransparent(source: Bitmap): Bitmap {
     val output = source.copy(Bitmap.Config.ARGB_8888, true)
