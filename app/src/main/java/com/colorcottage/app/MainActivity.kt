@@ -179,26 +179,22 @@ card.addView(TextView(this).apply {
             setOnClickListener { canvas.tool = ColoringCanvas.Tool.BUCKET }
         }
 
-        val small = Button(this).apply {
-            text = "12"
-            setOnClickListener { canvas.brushSize = 12f }
-        }
+var brushSizeIndex = 1
+val brushSizes = floatArrayOf(12f, 24f, 40f)
 
-        val medium = Button(this).apply {
-            text = "24"
-            setOnClickListener { canvas.brushSize = 24f }
-        }
+val sizeButton = Button(this).apply {
+    text = "Size: 24"
+    setOnClickListener {
+        brushSizeIndex = (brushSizeIndex + 1) % brushSizes.size
+        canvas.brushSize = brushSizes[brushSizeIndex]
+        text = "Size: ${brushSizes[brushSizeIndex].toInt()}"
+    }
+}
 
-        val large = Button(this).apply {
-            text = "40"
-            setOnClickListener { canvas.brushSize = 40f }
-        }
+toolRow.addView(brush)
+toolRow.addView(bucket)
+toolRow.addView(sizeButton)
 
-        toolRow.addView(brush)
-        toolRow.addView(bucket)
-        toolRow.addView(small)
-        toolRow.addView(medium)
-        toolRow.addView(large)
 
         val actionRow = LinearLayout(this).apply {
     gravity = Gravity.CENTER
