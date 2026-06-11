@@ -54,8 +54,7 @@ private fun makeGalleryThumbnail(page: ColoringPage): Bitmap {
         canvas.drawBitmap(it, 0f, 0f, null)
     }
 
-    val rawLineArt = BitmapFactory.decodeResource(resources, page.imageRes)
-    val lineArt = makeWhiteTransparent(rawLineArt)
+    val lineArt = BitmapFactory.decodeResource(resources, page.imageRes)
 
     val bitmapRatio = lineArt.width.toFloat() / lineArt.height.toFloat()
     val viewRatio = outputWidth.toFloat() / outputHeight.toFloat()
