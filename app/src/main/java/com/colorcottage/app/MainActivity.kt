@@ -32,54 +32,73 @@ class MainActivity : Activity() {
 
 private fun makeGalleryThumbnail(page: ColoringPage): Bitmap {
     val progressFile = File(filesDir, "progress_${page.name}.png")
-    val savedProgress = if (progressFile.exists()) {
-        BitmapFactory.decodeFile(progressFile.absolutePath)
-    } else {
-        null
+    val savedProgress = BitmapFactory.decodeFile(progressFile.absolutePath)
+
+    if (savedProgress == null) {
+        return BitmapFactory.decodeResource(resources, page.imageRes)
     }
 
-    val outputWidth = savedProgress?.width ?: 900
-    val outputHeight = savedProgress?.height ?: 1200
-
     val combined = Bitmap.createBitmap(
-        outputWidth,
-        outputHeight,
+        savedProgress.width,
+        savedProgress.height,
         Bitmap.Config.ARGB_8888
     )
 
     val canvas = Canvas(combined)
     canvas.drawColor(Color.WHITE)
 
-    savedProgress?.let {
-        canvas.drawBitmap(it, 0f, 0f, null)
-    }
+    canvas.drawBitmap(savedProgress, 0f, 0f, null)
 
-    val lineArt = BitmapFactory.decodeResource(resources, page.imageRes)
+    val rawLineArt = BitmapFactory.decodeResource(resources, page.imageRes)
+    val lineArt = makeWhiteTransparent(rawLineArt)
 
     val bitmapRatio = lineArt.width.toFloat() / lineArt.height.toFloat()
-    val viewRatio = outputWidth.toFloat() / outputHeight.toFloat()
+    val viewRatio = savedProgress.width.toFloat() / savedProgress.height.toFloat()
 
     val drawW: Float
     val drawH: Float
 
     if (bitmapRatio > viewRatio) {
-        drawW = outputWidth.toFloat()
-        drawH = outputWidth / bitmapRatio
+        drawW = savedProgress.width.toFloat()
+        drawH = savedProgress.width / bitmapRatio
     } else {
-        drawH = outputHeight.toFloat()
-        drawW = outputHeight * bitmapRatio
+        drawH = savedProgress.height.toFloat()
+        drawW = savedProgress.height * bitmapRatio
     }
 
-    val left = (outputWidth - drawW) / 2f
-    val top = (outputHeight - drawH) / 2f
+    val left = (savedProgress.width - drawW) / 2f
+    val top = (savedProgress.height - drawH) / 2f
 
-    val rect = RectF(left, top, left + drawW, top + drawH)
-
-    canvas.drawBitmap(lineArt, null, rect, null)
+    canvas.drawBitmap(
+        lineArt,
+        null,
+        RectF(left, top, left + drawW, top + drawH),
+        null
+    )
 
     return combined
 }
-    
+
+private fun makeWhiteTransparent(source: Bitmap): Bitmap {
+    val output = source.copy(Bitmap.Config.ARGB_8888, true)
+
+    for (y in 0 until output.height) {
+        for (x in 0 until output.width) {
+            val pixel = output.getPixel(x, y)
+            val r = Color.red(pixel)
+            val g = Color.green(pixel)
+            val b = Color.blue(pixel)
+
+            if (r > 220 && g > 220 && b > 220) {
+                output.setPixel(x, y, Color.TRANSPARENT)
+            } else {
+                output.setPixel(x, y, Color.BLACK)
+            }
+        }
+    }
+
+    return output
+}    
 
     private fun showGallery() {
     val scroll = ScrollView(this)
@@ -111,20 +130,7 @@ private fun makeGalleryThumbnail(page: ColoringPage): Bitmap {
         }
 
         val thumbnail = ImageView(this).apply {
-
-    val progressFile = File(
-        filesDir,
-        "progress_${page.name}.png"
-    )
-
-    if (progressFile.exists()) {
-        setImageBitmap(
-            BitmapFactory.decodeFile(progressFile.absolutePath)
-        )
-    } else {
-        setImageResource(page.imageRes)
-    }
-
+    setImageBitmap(makeGalleryThumbnail(page))
     scaleType = ImageView.ScaleType.FIT_CENTER
     adjustViewBounds = true
     setBackgroundColor(Color.WHITE)
