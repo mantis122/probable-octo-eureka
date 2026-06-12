@@ -86,11 +86,19 @@ private fun makeWhiteTransparent(source: Bitmap): Bitmap {
     })
 
     ColoringPage.values().forEach { page ->
-        val card = LinearLayout(this).apply {
+        val completed = isCompleted(page)
+
+val card = LinearLayout(this).apply {
     orientation = LinearLayout.VERTICAL
     gravity = Gravity.CENTER
     setPadding(24, 24, 24, 24)
-    setBackgroundColor(Color.WHITE)
+
+    setBackgroundColor(
+        if (completed)
+            Color.rgb(245, 255, 245)
+        else
+            Color.WHITE
+    )
 
     elevation = 8f
 
@@ -104,8 +112,8 @@ private fun makeWhiteTransparent(source: Bitmap): Bitmap {
     setImageBitmap(makeGalleryThumbnail(page))
     scaleType = ImageView.ScaleType.FIT_CENTER
     adjustViewBounds = true
-    setBackgroundColor(Color.WHITE)
-}
+    setPadding(8, 8, 8, 8)
+    setBackgroundColor(Color.rgb(245,245,245))}
 
         card.addView(thumbnail, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
@@ -133,7 +141,7 @@ card.addView(TextView(this).apply {
         else -> "Not started"
     }
 
-    textSize = 18f
+    textSize = 20f
     gravity = Gravity.CENTER
 
     setTextColor(
