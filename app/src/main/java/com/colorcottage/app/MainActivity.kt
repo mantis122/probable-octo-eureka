@@ -11,6 +11,8 @@ import android.widget.*
 import java.io.File
 import java.io.OutputStream
 import java.util.ArrayDeque
+import android.graphics.drawable.GradientDrawable
+
 
 class MainActivity : Activity() {
     private lateinit var canvas: ColoringCanvas
