@@ -15,6 +15,9 @@ import java.util.ArrayDeque
 class MainActivity : Activity() {
     private lateinit var canvas: ColoringCanvas
     private var currentPage = ColoringPage.PUPPY
+    private var selectedColor: Int = Color.RED
+    private val paletteButtons = mutableListOf<Button>()
+
 
     enum class ColoringPage(val title: String, val imageRes: Int) {
     PUPPY("Puppy", R.drawable.animal_puppy),
@@ -42,13 +45,37 @@ private fun setCompleted(page: ColoringPage, completed: Boolean) {
         .apply()
 }
 
+private fun updatePaletteSelection() {
+    paletteButtons.forEach { button ->
+        val color = button.tag as Int
+
+        val drawable = GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            setColor(color)
+
+            if (color == selectedColor) {
+                setStroke(8, Color.BLACK)
+            } else {
+                setStroke(2, Color.LTGRAY)
+            }
+        }
+
+        button.background = drawable
+    }
+}
+
 private fun makeColorButton(color: Int): Button {
     return Button(this).apply {
         text = ""
-        setBackgroundColor(color)
+        tag = color
+
         setOnClickListener {
+            selectedColor = color
             canvas.paintColor = color
+            updatePaletteSelection()
         }
+
+        paletteButtons.add(this)
     }
 }
 
@@ -222,6 +249,9 @@ val paletteRow2 = LinearLayout(this).apply {
     gravity = Gravity.CENTER
 }
 
+paletteButtons.clear()
+selectedColor = canvas.paintColor
+
 colors.forEachIndexed { index, c ->
     val button = makeColorButton(c)
 
@@ -238,6 +268,8 @@ colors.forEachIndexed { index, c ->
 
 palette.addView(paletteRow1)
 palette.addView(paletteRow2)
+
+updatePaletteSelection()
 
         val toolRow = LinearLayout(this).apply { gravity = Gravity.CENTER }
 
