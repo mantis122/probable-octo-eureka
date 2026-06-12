@@ -224,7 +224,7 @@ val done = Button(this).apply {
 toolRow.addView(brush)
 toolRow.addView(bucket)
 toolRow.addView(sizeButton)
-
+toolRow.addView(done)
 
         val actionRow = LinearLayout(this).apply {
     gravity = Gravity.CENTER
@@ -286,7 +286,6 @@ actionRow.addView(previous)
 actionRow.addView(back)
 actionRow.addView(undo)
 actionRow.addView(clear)
-actionRow.addView(done)
 actionRow.addView(next)
 
         root.addView(title)
