@@ -99,7 +99,6 @@ private fun makeWhiteTransparent(source: Bitmap): Bitmap {
         showColoringPage()
     }
 }
-        }
 
         val thumbnail = ImageView(this).apply {
     setImageBitmap(makeGalleryThumbnail(page))
