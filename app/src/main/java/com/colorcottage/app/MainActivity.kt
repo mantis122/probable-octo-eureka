@@ -56,8 +56,11 @@ private fun updatePaletteSelection() {
             setColor(color)
 
             if (color == selectedColor) {
-                setStroke(8, Color.BLACK)
-            } else {
+    setStroke(
+        8,
+        if (color == Color.BLACK) Color.WHITE else Color.BLACK
+    )
+} else {
                 setStroke(2, Color.LTGRAY)
             }
         }
