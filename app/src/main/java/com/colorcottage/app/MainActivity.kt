@@ -109,39 +109,49 @@ private fun makeWhiteTransparent(source: Bitmap): Bitmap {
 
         card.addView(thumbnail, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
-            420
+            520
         ))
 
         card.addView(TextView(this).apply {
-            text = page.title
-            textSize = 24f
-            gravity = Gravity.CENTER
-            setTextColor(Color.rgb(70, 50, 40))
-            setPadding(0, 12, 0, 0)
-        })
+    text = page.title
+    textSize = 28f
+    gravity = Gravity.CENTER
+    setTextColor(Color.rgb(70, 50, 40))
+    setTypeface(typeface, Typeface.BOLD)
+    setPadding(0, 16, 0, 4)
+})
 
 val progressFile = File(filesDir, "progress_${page.name}.png")
 
 card.addView(TextView(this).apply {
+
+    val completed = isCompleted(page)
+
     text = when {
-        isCompleted(page) -> "Completed ✓"
+        completed -> "Completed ✓"
         progressFile.exists() -> "Started"
         else -> "Not started"
     }
-    textSize = 16f
+
+    textSize = 18f
     gravity = Gravity.CENTER
+
     setTextColor(
-        if (isCompleted(page)) Color.rgb(70, 140, 80)
-        else Color.rgb(120, 100, 90)
+        when {
+            completed -> Color.rgb(70, 150, 80)
+            progressFile.exists() -> Color.rgb(210, 140, 40)
+            else -> Color.rgb(120, 100, 90)
+        }
     )
-    setPadding(0, 4, 0, 0)
+
+    setPadding(0, 4, 0, 8)
 })
 
         root.addView(card, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
         ).apply {
-            setMargins(0, 0, 0, 24)
+            setMargins(0, 0, 0, 36)
         })
     }
 
