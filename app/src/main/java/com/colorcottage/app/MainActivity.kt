@@ -42,6 +42,16 @@ private fun setCompleted(page: ColoringPage, completed: Boolean) {
         .apply()
 }
 
+private fun makeColorButton(color: Int): Button {
+    return Button(this).apply {
+        text = ""
+        setBackgroundColor(color)
+        setOnClickListener {
+            canvas.paintColor = color
+        }
+    }
+}
+
 private fun makeGalleryThumbnail(page: ColoringPage): Bitmap {
     return BitmapFactory.decodeResource(resources, page.imageRes)
 }
@@ -136,9 +146,9 @@ card.addView(TextView(this).apply {
     val completed = isCompleted(page)
 
     text = when {
-        completed -> "Completed ✓"
-        progressFile.exists() -> "Started"
-        else -> "Not started"
+        completed -> "🏆 Completed"
+        progressFile.exists() -> "⭐ Started"
+        else -> "Ready to color!"
     }
 
     textSize = 20f
@@ -198,16 +208,36 @@ card.addView(TextView(this).apply {
             Color.rgb(170, 130, 255)
         )
 
-        val palette = LinearLayout(this).apply { gravity = Gravity.CENTER }
-        colors.forEach { c ->
-            palette.addView(Button(this).apply {
-                text = ""
-                setBackgroundColor(c)
-                setOnClickListener { canvas.paintColor = c }
-            }, LinearLayout.LayoutParams(70, 70).apply {
-                setMargins(4, 4, 4, 4)
-            })
-        }
+        val palette = LinearLayout(this).apply {
+    orientation = LinearLayout.VERTICAL
+    gravity = Gravity.CENTER
+    setPadding(0, 8, 0, 8)
+}
+
+val paletteRow1 = LinearLayout(this).apply {
+    gravity = Gravity.CENTER
+}
+
+val paletteRow2 = LinearLayout(this).apply {
+    gravity = Gravity.CENTER
+}
+
+colors.forEachIndexed { index, c ->
+    val button = makeColorButton(c)
+
+    val params = LinearLayout.LayoutParams(88, 88).apply {
+        setMargins(6, 6, 6, 6)
+    }
+
+    if (index < 6) {
+        paletteRow1.addView(button, params)
+    } else {
+        paletteRow2.addView(button, params)
+    }
+}
+
+palette.addView(paletteRow1)
+palette.addView(paletteRow2)
 
         val toolRow = LinearLayout(this).apply { gravity = Gravity.CENTER }
 
