@@ -87,14 +87,18 @@ private fun makeWhiteTransparent(source: Bitmap): Bitmap {
 
     ColoringPage.values().forEach { page ->
         val card = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            gravity = Gravity.CENTER
-            setPadding(16, 16, 16, 16)
-            setBackgroundColor(Color.WHITE)
-            setOnClickListener {
-                currentPage = page
-                showColoringPage()
-            }
+    orientation = LinearLayout.VERTICAL
+    gravity = Gravity.CENTER
+    setPadding(24, 24, 24, 24)
+    setBackgroundColor(Color.WHITE)
+
+    elevation = 8f
+
+    setOnClickListener {
+        currentPage = page
+        showColoringPage()
+    }
+}
         }
 
         val thumbnail = ImageView(this).apply {
