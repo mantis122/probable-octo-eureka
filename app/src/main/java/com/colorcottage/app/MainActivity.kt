@@ -127,6 +127,24 @@ private fun makeWhiteTransparent(source: Bitmap): Bitmap {
         setPadding(0, 0, 0, 24)
     })
 
+val startedCount = ColoringPage.values().count { page ->
+    File(filesDir, "progress_${page.name}.png").exists()
+}
+
+val completedCount = ColoringPage.values().count { page ->
+    isCompleted(page)
+}
+
+val totalCount = ColoringPage.values().size
+
+root.addView(TextView(this).apply {
+    text = "🎨 $startedCount started   🏆 $completedCount of $totalCount completed"
+    textSize = 18f
+    gravity = Gravity.CENTER
+    setTextColor(Color.rgb(120, 100, 90))
+    setPadding(0, 0, 0, 28)
+})
+
     ColoringPage.values().forEach { page ->
         val completed = isCompleted(page)
 
