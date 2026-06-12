@@ -89,7 +89,7 @@ private fun makeWhiteTransparent(source: Bitmap): Bitmap {
 
     root.addView(TextView(this).apply {
         text = "Color Cottage"
-        textSize = 34f
+        textSize = 28f
         gravity = Gravity.CENTER
         setTextColor(Color.rgb(70, 50, 40))
         setPadding(0, 0, 0, 24)
@@ -105,7 +105,7 @@ val card = LinearLayout(this).apply {
 
     setBackgroundColor(
         if (completed)
-            Color.rgb(245, 255, 245)
+            Color.rgb(225, 250, 225)
         else
             Color.WHITE
     )
@@ -278,8 +278,17 @@ toolRow.addView(sizeButton)
 toolRow.addView(done)
 
         val actionRow = LinearLayout(this).apply {
+    orientation = LinearLayout.VERTICAL
     gravity = Gravity.CENTER
     setPadding(0, 0, 0, 140)
+}
+
+val actionRowTop = LinearLayout(this).apply {
+    gravity = Gravity.CENTER
+}
+
+val actionRowBottom = LinearLayout(this).apply {
+    gravity = Gravity.CENTER
 }
         val back = Button(this).apply {
             text = "Pages"
@@ -333,11 +342,15 @@ val next = Button(this).apply {
     }
 }
 
-actionRow.addView(previous)
-actionRow.addView(back)
-actionRow.addView(undo)
-actionRow.addView(clear)
-actionRow.addView(next)
+actionRowTop.addView(previous)
+actionRowTop.addView(back)
+actionRowTop.addView(undo)
+
+actionRowBottom.addView(clear)
+actionRowBottom.addView(next)
+
+actionRow.addView(actionRowTop)
+actionRow.addView(actionRowBottom)
 
         root.addView(title)
         root.addView(canvas, LinearLayout.LayoutParams(
