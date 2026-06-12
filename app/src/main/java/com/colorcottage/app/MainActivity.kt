@@ -212,9 +212,10 @@ val sizeButton = Button(this).apply {
     }
 }
 
-Button(this).apply {
+val done = Button(this).apply {
     text = "Done ✓"
     setOnClickListener {
+        canvas.saveProgress()
         setCompleted(currentPage, true)
         Toast.makeText(this@MainActivity, "Great job!", Toast.LENGTH_SHORT).show()
     }
