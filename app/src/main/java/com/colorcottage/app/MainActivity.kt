@@ -21,15 +21,28 @@ class MainActivity : Activity() {
     private val paletteButtons = mutableListOf<Button>()
 
 
-    enum class ColoringPage(val title: String, val imageRes: Int) {
+enum class ColoringPage(val title: String, val imageRes: Int) {
     PUPPY("Puppy", R.drawable.animal_puppy),
     KITTEN("Kitten", R.drawable.animal_kitten),
     BUNNY("Bunny", R.drawable.animal_bunny),
     DUCKLING("Duckling", R.drawable.animal_duckling),
     PONY("Pony", R.drawable.animal_pony),
-    DINOSAUR("Baby Dinosaur", R.drawable.animal_dinosaur)
-}
+    DINOSAUR("Baby Dinosaur", R.drawable.animal_dinosaur),
 
+    LAMB("Lamb", R.drawable.animal_lamb),
+    PIGLET("Piglet", R.drawable.animal_piglet),
+    CHICK("Chick", R.drawable.animal_chick),
+    CALF("Calf", R.drawable.animal_calf),
+
+    KOALA("Koala Joey", R.drawable.animal_koala),
+    OTTER("Otter Pup", R.drawable.animal_otter),
+    HEDGEHOG("Hedgehog", R.drawable.animal_hedgehog),
+    RACCOON("Raccoon Kit", R.drawable.animal_raccoon),
+    FOX("Fox Cub", R.drawable.animal_fox),
+    BEAR("Bear Cub", R.drawable.animal_bear),
+    TURTLE("Turtle", R.drawable.animal_turtle)
+    PANDA("Panda",R.drawable.animal_panda)
+}
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         showGallery()
