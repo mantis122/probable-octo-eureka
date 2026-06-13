@@ -40,7 +40,7 @@ enum class ColoringPage(val title: String, val imageRes: Int) {
     RACCOON("Raccoon Kit", R.drawable.animal_raccoon),
     FOX("Fox Cub", R.drawable.animal_fox),
     BEAR("Bear Cub", R.drawable.animal_bear),
-    TURTLE("Turtle", R.drawable.animal_turtle)
+    TURTLE("Turtle", R.drawable.animal_turtle),
     PANDA("Panda",R.drawable.animal_panda)
 }
     override fun onCreate(savedInstanceState: Bundle?) {
