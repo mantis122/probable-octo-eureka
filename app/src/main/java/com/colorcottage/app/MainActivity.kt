@@ -874,18 +874,20 @@ class ColoringCanvas(
         invalidate()
     }
 
-    fun exportBitmap(): Bitmap {
-        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-        val exportCanvas = Canvas(bitmap)
-        exportCanvas.drawColor(Color.WHITE)
+fun exportBitmap(): Bitmap {
+    val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565)
+    val exportCanvas = Canvas(bitmap)
 
-        colorBitmap?.let {
-            exportCanvas.drawBitmap(it, 0f, 0f, null)
-        }
+    exportCanvas.drawColor(Color.WHITE)
 
-        drawPage(exportCanvas)
-        return bitmap
+    colorBitmap?.let {
+        exportCanvas.drawBitmap(it, 0f, 0f, null)
     }
+
+    drawPage(exportCanvas)
+
+    return bitmap
+}    
 
     fun saveProgress() {
         val bitmap = colorBitmap ?: return
