@@ -245,6 +245,32 @@ root.addView(TextView(this).apply {
     setPadding(0, 0, 0, 28)
 })
 
+val progressPercent =
+    if (totalCount == 0) 0
+    else (completedCount * 100 / totalCount)
+
+root.addView(ProgressBar(
+    this,
+    null,
+    android.R.attr.progressBarStyleHorizontal
+).apply {
+    max = 100
+    progress = progressPercent
+}, LinearLayout.LayoutParams(
+    LinearLayout.LayoutParams.MATCH_PARENT,
+    LinearLayout.LayoutParams.WRAP_CONTENT
+).apply {
+    setMargins(24, 0, 24, 12)
+})
+
+root.addView(TextView(this).apply {
+    text = "$completedCount / $totalCount Animals Collected"
+    textSize = 18f
+    gravity = Gravity.CENTER
+    setTextColor(Color.rgb(70, 120, 80))
+    setPadding(0, 0, 0, 24)
+})
+
 root.addView(Button(this).apply {
     text = "🏆 Stickers"
     textSize = 20f
