@@ -60,6 +60,14 @@ private fun setCompleted(page: ColoringPage, completed: Boolean) {
         .apply()
 }
 
+private fun showStickerReward(page: ColoringPage) {
+    AlertDialog.Builder(this)
+        .setTitle("Sticker earned!")
+        .setMessage("You earned a ${page.title} sticker!")
+        .setPositiveButton("Yay!", null)
+        .show()
+}
+
 private fun updatePaletteSelection() {
     paletteButtons.forEach { button ->
         val color = button.tag as Int
@@ -335,8 +343,16 @@ val done = Button(this).apply {
     text = "Done ✓"
     setOnClickListener {
         canvas.saveProgress()
+
+        val alreadyCompleted = isCompleted(currentPage)
+
         setCompleted(currentPage, true)
-        Toast.makeText(this@MainActivity, "Great job!", Toast.LENGTH_SHORT).show()
+
+        if (alreadyCompleted) {
+            Toast.makeText(this@MainActivity, "Already completed!", Toast.LENGTH_SHORT).show()
+        } else {
+            showStickerReward(currentPage)
+        }
     }
 }
 
