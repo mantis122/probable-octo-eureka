@@ -12,7 +12,7 @@ import java.io.File
 import java.io.OutputStream
 import java.util.ArrayDeque
 import android.graphics.drawable.GradientDrawable
-
+import android.net.Uri
 
 class MainActivity : Activity() {
     private lateinit var canvas: ColoringCanvas
@@ -517,10 +517,10 @@ val actionRowBottom = LinearLayout(this).apply {
             }
         }
 
-        val save = Button(this).apply {
-            text = "Save"
-            setOnClickListener { saveCanvasToGallery() }
-        }
+       val share = Button(this).apply {
+    text = "Share"
+    setOnClickListener { shareCanvasArtwork() }
+}
 
 val previous = Button(this).apply {
     text = "Prev"
@@ -549,6 +549,7 @@ actionRowTop.addView(back)
 actionRowTop.addView(undo)
 
 actionRowBottom.addView(clear)
+actionRowBottom.addView(share)
 actionRowBottom.addView(next)
 
 actionRow.addView(actionRowTop)
@@ -566,6 +567,39 @@ actionRow.addView(actionRowBottom)
 
         setContentView(root)
     }
+
+private fun shareCanvasArtwork() {
+    canvas.saveProgress()
+
+    val bitmap = canvas.exportBitmap()
+    val filename = "ColorCottage_${currentPage.name}_${System.currentTimeMillis()}.png"
+
+    val values = ContentValues().apply {
+        put(MediaStore.Images.Media.DISPLAY_NAME, filename)
+        put(MediaStore.Images.Media.MIME_TYPE, "image/png")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/Color Cottage")
+        }
+    }
+
+    val uri: Uri? = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+
+    if (uri != null) {
+        contentResolver.openOutputStream(uri)?.use {
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
+        }
+
+        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "image/png"
+            putExtra(Intent.EXTRA_STREAM, uri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+
+        startActivity(Intent.createChooser(shareIntent, "Share artwork"))
+    } else {
+        Toast.makeText(this, "Share failed", Toast.LENGTH_SHORT).show()
+    }
+}
 
     private fun saveCanvasToGallery() {
         canvas.saveProgress()
