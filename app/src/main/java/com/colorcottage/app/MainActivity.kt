@@ -68,6 +68,44 @@ private fun showStickerReward(page: ColoringPage) {
         .show()
 }
 
+private fun showStickerGallery() {
+    val scroll = ScrollView(this)
+
+    val root = LinearLayout(this).apply {
+        orientation = LinearLayout.VERTICAL
+        setPadding(24, 36, 24, 120)
+        setBackgroundColor(Color.rgb(255, 248, 235))
+    }
+
+    root.addView(TextView(this).apply {
+        text = "🏆 My Stickers"
+        textSize = 30f
+        gravity = Gravity.CENTER
+        setTextColor(Color.rgb(70, 50, 40))
+        setPadding(0, 0, 0, 24)
+    })
+
+    ColoringPage.values().forEach { page ->
+        if (isCompleted(page)) {
+            root.addView(TextView(this).apply {
+                text = "✅ ${page.title} Sticker"
+                textSize = 24f
+                gravity = Gravity.CENTER
+                setTextColor(Color.rgb(70, 120, 80))
+                setPadding(0, 12, 0, 12)
+            })
+        }
+    }
+
+    root.addView(Button(this).apply {
+        text = "Back to Pages"
+        setOnClickListener { showGallery() }
+    })
+
+    scroll.addView(root)
+    setContentView(scroll)
+}
+
 private fun updatePaletteSelection() {
     paletteButtons.forEach { button ->
         val color = button.tag as Int
@@ -164,6 +202,19 @@ root.addView(TextView(this).apply {
     gravity = Gravity.CENTER
     setTextColor(Color.rgb(120, 100, 90))
     setPadding(0, 0, 0, 28)
+})
+
+root.addView(Button(this).apply {
+    text = "🏆 Stickers"
+    textSize = 20f
+    setOnClickListener {
+        showStickerGallery()
+    }
+}, LinearLayout.LayoutParams(
+    LinearLayout.LayoutParams.MATCH_PARENT,
+    LinearLayout.LayoutParams.WRAP_CONTENT
+).apply {
+    setMargins(0, 0, 0, 28)
 })
 
     ColoringPage.values().forEach { page ->
