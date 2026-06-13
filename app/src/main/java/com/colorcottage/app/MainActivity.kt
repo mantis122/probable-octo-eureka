@@ -145,14 +145,7 @@ private fun showStickerGallery() {
     scroll.addView(root)
     setContentView(scroll)
 }
-    root.addView(Button(this).apply {
-        text = "Back to Pages"
-        setOnClickListener { showGallery() }
-    })
 
-    scroll.addView(root)
-    setContentView(scroll)
-}
 
 private fun updatePaletteSelection() {
     paletteButtons.forEach { button ->
