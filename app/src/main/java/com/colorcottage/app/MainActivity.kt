@@ -85,18 +85,66 @@ private fun showStickerGallery() {
         setPadding(0, 0, 0, 24)
     })
 
-    ColoringPage.values().forEach { page ->
-        if (isCompleted(page)) {
-            root.addView(TextView(this).apply {
-                text = "✅ ${page.title} Sticker"
+    val earnedPages = ColoringPage.values().filter { isCompleted(it) }
+
+    if (earnedPages.isEmpty()) {
+        root.addView(TextView(this).apply {
+            text = "Complete a page to earn stickers!"
+            textSize = 22f
+            gravity = Gravity.CENTER
+            setTextColor(Color.rgb(120, 100, 90))
+            setPadding(0, 24, 0, 24)
+        })
+    } else {
+        earnedPages.forEach { page ->
+            val card = LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
+                gravity = Gravity.CENTER
+                setPadding(24, 24, 24, 24)
+                setBackgroundColor(Color.WHITE)
+                elevation = 8f
+            }
+
+            val stickerImage = ImageView(this).apply {
+                setImageBitmap(makeGalleryThumbnail(page))
+                scaleType = ImageView.ScaleType.FIT_CENTER
+                adjustViewBounds = true
+                setBackgroundColor(Color.rgb(245, 245, 245))
+                setPadding(8, 8, 8, 8)
+            }
+
+            card.addView(stickerImage, LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                360
+            ))
+
+            card.addView(TextView(this).apply {
+                text = "🏆 ${page.title} Sticker"
                 textSize = 24f
                 gravity = Gravity.CENTER
                 setTextColor(Color.rgb(70, 120, 80))
-                setPadding(0, 12, 0, 12)
+                setTypeface(typeface, Typeface.BOLD)
+                setPadding(0, 16, 0, 0)
+            })
+
+            root.addView(card, LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(0, 0, 0, 28)
             })
         }
     }
 
+    root.addView(Button(this).apply {
+        text = "Back to Pages"
+        textSize = 20f
+        setOnClickListener { showGallery() }
+    })
+
+    scroll.addView(root)
+    setContentView(scroll)
+}
     root.addView(Button(this).apply {
         text = "Back to Pages"
         setOnClickListener { showGallery() }
