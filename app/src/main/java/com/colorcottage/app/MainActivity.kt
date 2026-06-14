@@ -878,7 +878,6 @@ class ColoringCanvas(
     invalidate()
 }
 
-
 fun exportBitmap(): Bitmap {
     val output = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
     val exportCanvas = Canvas(output)
@@ -890,7 +889,7 @@ fun exportBitmap(): Bitmap {
             for (x in 0 until width) {
                 val pixel = colors.getPixel(x, y)
 
-                if (Color.alpha(pixel) ==255) {
+                if (Color.alpha(pixel) == 255) {
                     output.setPixel(
                         x,
                         y,
@@ -905,7 +904,14 @@ fun exportBitmap(): Bitmap {
         }
     }
 
-    drawPage(exportCanvas)
+    val rawLineArt = BitmapFactory.decodeResource(resources, page.imageRes)
+
+    exportCanvas.drawBitmap(
+        rawLineArt,
+        null,
+        imageRect,
+        null
+    )
 
     return output
 }
