@@ -878,15 +878,21 @@ class ColoringCanvas(
     }
 
 fun exportBitmap(): Bitmap {
-    val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-    val exportCanvas = Canvas(bitmap)
+    val output = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+    val exportCanvas = Canvas(output)
 
+    // Solid white background
     exportCanvas.drawColor(Color.WHITE)
 
-    // Draw exactly what the user sees on screen
-    draw(exportCanvas)
+    // Draw coloring layer
+    colorBitmap?.let {
+        exportCanvas.drawBitmap(it, 0f, 0f, null)
+    }
 
-    return bitmap
+    // Draw black line art on top
+    drawPage(exportCanvas)
+
+    return output
 }
 
     fun saveProgress() {
