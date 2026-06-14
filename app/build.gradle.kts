@@ -3,12 +3,18 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 
+dependencies {
+
+implementation "androidx.core:core-ktx:1.13.1"
+
+}
+
 android {
    namespace = "com.colorcottage.app"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.colorcpttage.app"
+        applicationId = "com.colorcottage.app"
         minSdk = 23
         targetSdk = 35
         versionCode = 1
