@@ -13,6 +13,7 @@ import java.io.OutputStream
 import java.util.ArrayDeque
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
+import androidx.core.content.FileProvider
 
 class MainActivity : Activity() {
     private lateinit var canvas: ColoringCanvas
@@ -566,43 +567,30 @@ actionRow.addView(actionRowBottom)
         root.addView(actionRow)
 
         setContentView(root)
-    }
 
 private fun shareCanvasArtwork() {
     canvas.saveProgress()
 
     val bitmap = canvas.exportBitmap()
-    val filename = "ColorCottage_${currentPage.name}_${System.currentTimeMillis()}.jpg"
+    val file = File(cacheDir, "color_cottage_share.jpg")
 
-    val values = ContentValues().apply {
-        put(MediaStore.Images.Media.DISPLAY_NAME, filename)
-        put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/Color Cottage")
-        }
+    file.outputStream().use {
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 95, it)
     }
 
-    val uri: Uri? = contentResolver.insert(
-        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-        values
+    val uri = FileProvider.getUriForFile(
+        this,
+        "${packageName}.fileprovider",
+        file
     )
 
-    if (uri != null) {
-        contentResolver.openOutputStream(uri)?.use {
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 95, it)
-            it.flush()
-        }
-
-        val shareIntent = Intent(Intent.ACTION_SEND).apply {
-            type = "image/jpeg"
-            putExtra(Intent.EXTRA_STREAM, uri)
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        }
-
-        startActivity(Intent.createChooser(shareIntent, "Share artwork"))
-    } else {
-        Toast.makeText(this, "Share failed", Toast.LENGTH_SHORT).show()
+    val shareIntent = Intent(Intent.ACTION_SEND).apply {
+        type = "image/jpeg"
+        putExtra(Intent.EXTRA_STREAM, uri)
+        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
     }
+
+    startActivity(Intent.createChooser(shareIntent, "Share artwork"))
 }
 
     private fun saveCanvasToGallery() {
