@@ -590,18 +590,10 @@ private fun shareCanvasArtwork() {
     it.flush()
 }
 
-contentResolver.update(uri, ContentValues(), null, null)
-
 val shareIntent = Intent(Intent.ACTION_SEND).apply {
-            type = "image/png"
-            putExtra(Intent.EXTRA_STREAM, uri)
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        }
-
-        startActivity(Intent.createChooser(shareIntent, "Share artwork"))
-    } else {
-        Toast.makeText(this, "Share failed", Toast.LENGTH_SHORT).show()
-    }
+    type = "image/jpeg"
+    putExtra(Intent.EXTRA_STREAM, uri)
+    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 }
 
     private fun saveCanvasToGallery() {
