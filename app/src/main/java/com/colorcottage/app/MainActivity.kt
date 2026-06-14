@@ -713,7 +713,7 @@ class ColoringCanvas(
                 val g = Color.green(pixel)
                 val b = Color.blue(pixel)
 
-                if (r > 220 && g > 220 && b > 220) {
+                if (r > 120 && g > 120 && b > 120) {
                     output.setPixel(x, y, Color.TRANSPARENT)
                } else {
                 output.setPixel(x, y, Color.BLACK)
