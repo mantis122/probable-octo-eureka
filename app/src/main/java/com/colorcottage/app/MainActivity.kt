@@ -572,7 +572,7 @@ private fun shareCanvasArtwork() {
     canvas.saveProgress()
 
     val bitmap = canvas.exportBitmap()
-    val filename = "ColorCottage_${currentPage.name}_${System.currentTimeMillis()}.png"
+    val filename = "ColorCottage_${currentPage.name}_${System.currentTimeMillis()}.jpg"
 
     val values = ContentValues().apply {
         put(MediaStore.Images.Media.DISPLAY_NAME, filename)
