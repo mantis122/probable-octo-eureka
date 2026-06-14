@@ -920,15 +920,15 @@ fun exportBitmap(): Bitmap {
     }
 
     private fun loadProgress() {
-        val file = progressFile()
+       // val file = progressFile()
 
-        if (file.exists()) {
-            val saved = BitmapFactory.decodeFile(file.absolutePath)
-            if (saved != null) {
-                val scaled = Bitmap.createScaledBitmap(saved, width, height, true)
-                colorCanvas?.drawBitmap(scaled, 0f, 0f, null)
-            }
-        }
+        //if (file.exists()) {
+         //   val saved = BitmapFactory.decodeFile(file.absolutePath)
+          //  if (saved != null) {
+           //     val scaled = Bitmap.createScaledBitmap(saved, width, height, true)
+            //    colorCanvas?.drawBitmap(scaled, 0f, 0f, null)
+          //  }
+     //   }
     }
 
     private fun progressFile(): File {
