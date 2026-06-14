@@ -567,7 +567,7 @@ actionRow.addView(actionRowBottom)
         root.addView(actionRow)
 
         setContentView(root)
-
+}
 private fun shareCanvasArtwork() {
     canvas.saveProgress()
 
