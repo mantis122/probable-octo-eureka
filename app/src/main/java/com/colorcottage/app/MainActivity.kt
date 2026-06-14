@@ -878,36 +878,16 @@ class ColoringCanvas(
     }
 
 fun exportBitmap(): Bitmap {
-    val output = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+    val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+    val exportCanvas = Canvas(bitmap)
 
-    // Start with solid white
-    for (y in 0 until height) {
-        for (x in 0 until width) {
-            output.setPixel(x, y, Color.WHITE)
-        }
-    }
+    exportCanvas.drawColor(Color.WHITE)
 
-    // Copy only painted pixels
-    colorBitmap?.let { colors ->
-        for (y in 0 until height) {
-            for (x in 0 until width) {
-                val pixel = colors.getPixel(x, y)
-                if (Color.alpha(pixel) > 0) {
-                    output.setPixel(x, y, Color.rgb(
-                        Color.red(pixel),
-                        Color.green(pixel),
-                        Color.blue(pixel)
-                    ))
-                }
-            }
-        }
-    }
+    // Draw exactly what the user sees on screen
+    draw(exportCanvas)
 
-    val exportCanvas = Canvas(output)
-    drawPage(exportCanvas)
-
-    return output
-}    
+    return bitmap
+}
 
     fun saveProgress() {
         val bitmap = colorBitmap ?: return
