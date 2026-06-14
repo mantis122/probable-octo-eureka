@@ -522,6 +522,8 @@ val actionRowBottom = LinearLayout(this).apply {
     text = "Share"
     setOnClickListener { shareCanvasArtwork() }
 
+}
+
 val testExport = Button(this).apply {
     text = "Test Export"
     setOnClickListener {
@@ -529,7 +531,7 @@ val testExport = Button(this).apply {
     }
 }
 
-}
+
 
 val previous = Button(this).apply {
     text = "Prev"
