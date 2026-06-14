@@ -595,7 +595,7 @@ val shareIntent = Intent(Intent.ACTION_SEND).apply {
     putExtra(Intent.EXTRA_STREAM, uri)
     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 }
-
+}
     private fun saveCanvasToGallery() {
         canvas.saveProgress()
 
