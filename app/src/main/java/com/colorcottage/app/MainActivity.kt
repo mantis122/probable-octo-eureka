@@ -890,7 +890,7 @@ fun exportBitmap(): Bitmap {
             for (x in 0 until width) {
                 val pixel = colors.getPixel(x, y)
 
-                if (Color.alpha(pixel) > 0) {
+                if (Color.alpha(pixel) ==255) {
                     output.setPixel(
                         x,
                         y,
