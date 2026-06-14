@@ -881,18 +881,33 @@ class ColoringCanvas(
 fun exportBitmap(): Bitmap {
     val output = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
     val exportCanvas = Canvas(output)
+
     exportCanvas.drawColor(Color.WHITE)
-    return output
-}
 
-    fun saveProgress() {
-        val bitmap = colorBitmap ?: return
-        val file = progressFile()
+    colorBitmap?.let { colors ->
+        for (y in 0 until height) {
+            for (x in 0 until width) {
+                val pixel = colors.getPixel(x, y)
 
-        file.outputStream().use {
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
+                if (Color.alpha(pixel) > 0) {
+                    output.setPixel(
+                        x,
+                        y,
+                        Color.rgb(
+                            Color.red(pixel),
+                            Color.green(pixel),
+                            Color.blue(pixel)
+                        )
+                    )
+                }
+            }
         }
     }
+
+    drawPage(exportCanvas)
+
+    return output
+}
 
     private fun loadProgress() {
         val file = progressFile()
