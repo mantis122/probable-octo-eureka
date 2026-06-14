@@ -576,7 +576,7 @@ private fun shareCanvasArtwork() {
 
     val values = ContentValues().apply {
         put(MediaStore.Images.Media.DISPLAY_NAME, filename)
-        put(MediaStore.Images.Media.MIME_TYPE, "image/png")
+        put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/Color Cottage")
         }
@@ -586,7 +586,7 @@ private fun shareCanvasArtwork() {
 
     if (uri != null) {
        contentResolver.openOutputStream(uri)?.use {
-    bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
+    bitmap.compress(Bitmap.CompressFormat.JPEG, 95, it)
     it.flush()
 }
 
