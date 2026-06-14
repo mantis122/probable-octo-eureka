@@ -872,11 +872,11 @@ class ColoringCanvas(
     }
 
     fun clearDrawing() {
-        saveUndoState()
-        colorBitmap?.eraseColor(Color.TRANSPARENT)
-        saveProgress()
-        invalidate()
-    }
+    saveUndoState()
+    colorBitmap?.eraseColor(Color.TRANSPARENT)
+    saveProgress()
+    invalidate()
+}
 
 
 fun exportBitmap(): Bitmap {
