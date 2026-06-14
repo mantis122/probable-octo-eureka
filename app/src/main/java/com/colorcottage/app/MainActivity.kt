@@ -560,6 +560,7 @@ actionRowTop.addView(back)
 actionRowTop.addView(undo)
 
 actionRowBottom.addView(clear)
+actionRowBottom.addView(testExport)
 actionRowBottom.addView(share)
 actionRowBottom.addView(next)
 
