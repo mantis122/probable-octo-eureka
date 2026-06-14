@@ -681,6 +681,7 @@ class ColoringCanvas(
         val rawLineArt = BitmapFactory.decodeResource(resources, page.imageRes)
         lineArtBitmap = makeWhiteTransparent(rawLineArt)
         colorBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+        colorBitmap?.eraseColor(Color.TRANSPARENT)
         colorCanvas = Canvas(colorBitmap!!)
 
         loadProgress()
