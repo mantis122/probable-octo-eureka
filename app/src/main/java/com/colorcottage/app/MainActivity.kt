@@ -582,20 +582,29 @@ private fun shareCanvasArtwork() {
         }
     }
 
-    val uri: Uri? = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+    val uri: Uri? = contentResolver.insert(
+        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+        values
+    )
 
     if (uri != null) {
-       contentResolver.openOutputStream(uri)?.use {
-    bitmap.compress(Bitmap.CompressFormat.JPEG, 95, it)
-    it.flush()
+        contentResolver.openOutputStream(uri)?.use {
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 95, it)
+            it.flush()
+        }
+
+        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "image/jpeg"
+            putExtra(Intent.EXTRA_STREAM, uri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+
+        startActivity(Intent.createChooser(shareIntent, "Share artwork"))
+    } else {
+        Toast.makeText(this, "Share failed", Toast.LENGTH_SHORT).show()
+    }
 }
 
-val shareIntent = Intent(Intent.ACTION_SEND).apply {
-    type = "image/jpeg"
-    putExtra(Intent.EXTRA_STREAM, uri)
-    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-}
-}
     private fun saveCanvasToGallery() {
         canvas.saveProgress()
 
