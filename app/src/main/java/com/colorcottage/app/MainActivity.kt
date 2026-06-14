@@ -585,11 +585,14 @@ private fun shareCanvasArtwork() {
     val uri: Uri? = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
 
     if (uri != null) {
-        contentResolver.openOutputStream(uri)?.use {
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
-        }
+       contentResolver.openOutputStream(uri)?.use {
+    bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
+    it.flush()
+}
 
-        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+contentResolver.update(uri, ContentValues(), null, null)
+
+val shareIntent = Intent(Intent.ACTION_SEND).apply {
             type = "image/png"
             putExtra(Intent.EXTRA_STREAM, uri)
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
