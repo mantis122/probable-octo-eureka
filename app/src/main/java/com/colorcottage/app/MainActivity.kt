@@ -583,7 +583,7 @@ private fun shareCanvasArtwork() {
     canvas.saveProgress()
 
     val bitmap = canvas.exportBitmap()
-    val file = File(cacheDir, "color_cottage_share.jpg")
+    val file = File(cacheDir, "color_cottage_share_${System.currentTimeMillis()}.jpg")
 
     file.outputStream().use {
         bitmap.compress(Bitmap.CompressFormat.JPEG, 95, it)
@@ -877,21 +877,11 @@ class ColoringCanvas(
         invalidate()
     }
 
+
 fun exportBitmap(): Bitmap {
     val output = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
     val exportCanvas = Canvas(output)
-
-    // Solid white background
     exportCanvas.drawColor(Color.WHITE)
-
-    // Draw coloring layer
-    colorBitmap?.let {
-        exportCanvas.drawBitmap(it, 0f, 0f, null)
-    }
-
-    // Draw black line art on top
-    drawPage(exportCanvas)
-
     return output
 }
 
