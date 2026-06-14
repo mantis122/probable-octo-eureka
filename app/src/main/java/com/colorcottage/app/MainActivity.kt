@@ -909,6 +909,15 @@ fun exportBitmap(): Bitmap {
     return output
 }
 
+    fun saveProgress() {
+        val bitmap = colorBitmap ?: return
+        val file = progressFile()
+
+        file.outputStream().use {
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
+        }
+    }
+
     private fun loadProgress() {
         val file = progressFile()
 
