@@ -583,10 +583,10 @@ private fun shareCanvasArtwork() {
     canvas.saveProgress()
 
     val bitmap = canvas.exportBitmap()
-    val file = File(cacheDir, "color_cottage_share_${System.currentTimeMillis()}.jpg")
+    val file = File(cacheDir, "share_test_${System.currentTimeMillis()}.png")
 
     file.outputStream().use {
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 95, it)
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
     }
 
     val uri = FileProvider.getUriForFile(
@@ -596,7 +596,7 @@ private fun shareCanvasArtwork() {
     )
 
     val shareIntent = Intent(Intent.ACTION_SEND).apply {
-        type = "image/jpeg"
+        type = "image/png"
         putExtra(Intent.EXTRA_STREAM, uri)
         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
     }
