@@ -904,14 +904,15 @@ fun exportBitmap(): Bitmap {
         }
     }
 
-    val rawLineArt = BitmapFactory.decodeResource(resources, page.imageRes)
+val rawLineArt = BitmapFactory.decodeResource(resources, page.imageRes)
+val exportLineArt = makeWhiteTransparent(rawLineArt)
 
-    exportCanvas.drawBitmap(
-        rawLineArt,
-        null,
-        imageRect,
-        null
-    )
+exportCanvas.drawBitmap(
+    exportLineArt,
+    null,
+    imageRect,
+    null
+)
 
     return output
 }
