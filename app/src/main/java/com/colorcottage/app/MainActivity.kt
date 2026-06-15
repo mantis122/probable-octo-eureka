@@ -78,6 +78,20 @@ private fun showStickerGallery() {
         setBackgroundColor(Color.rgb(255, 248, 235))
     }
 
+val testIcon = ImageView(this).apply {
+    setImageResource(R.drawable.ic_storybook)
+
+    layoutParams = LinearLayout.LayoutParams(
+        dp(96),
+        dp(96)
+    ).apply {
+        gravity = Gravity.CENTER_HORIZONTAL
+        topMargin = dp(16)
+    }
+}
+
+root.addView(testIcon)
+
     root.addView(TextView(this).apply {
         text = "🏆 My Stickers"
         textSize = 30f
@@ -147,6 +161,8 @@ private fun showStickerGallery() {
     setContentView(scroll)
 }
 
+private fun dp(value: Int): Int =
+    (value * resources.displayMetrics.density).toInt()
 
 private fun updatePaletteSelection() {
     paletteButtons.forEach { button ->
