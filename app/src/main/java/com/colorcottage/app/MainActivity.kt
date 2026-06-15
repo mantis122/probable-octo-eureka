@@ -703,6 +703,27 @@ class ColoringCanvas(
         drawPage(canvas)
     }
 
+private fun makeLineArtForExport(source: Bitmap): Bitmap {
+    val output = Bitmap.createBitmap(source.width, source.height, Bitmap.Config.ARGB_8888)
+
+    for (y in 0 until source.height) {
+        for (x in 0 until source.width) {
+            val pixel = source.getPixel(x, y)
+            val r = Color.red(pixel)
+            val g = Color.green(pixel)
+            val b = Color.blue(pixel)
+
+            if (r < 180 && g < 180 && b < 180) {
+                output.setPixel(x, y, Color.BLACK)
+            } else {
+                output.setPixel(x, y, Color.TRANSPARENT)
+            }
+        }
+    }
+
+    return output
+}
+
     private fun makeWhiteTransparent(source: Bitmap): Bitmap {
         val output = source.copy(Bitmap.Config.ARGB_8888, true)
 
@@ -905,7 +926,7 @@ fun exportBitmap(): Bitmap {
     }
 
 val rawLineArt = BitmapFactory.decodeResource(resources, page.imageRes)
-val exportLineArt = makeWhiteTransparent(rawLineArt)
+val exportLineArt = val exportLineArt = makeLineArtForExport(rawLineArt)
 
 exportCanvas.drawBitmap(
     exportLineArt,
