@@ -926,7 +926,7 @@ fun exportBitmap(): Bitmap {
     }
 
 val rawLineArt = BitmapFactory.decodeResource(resources, page.imageRes)
-val exportLineArt = val exportLineArt = makeLineArtForExport(rawLineArt)
+val exportLineArt = makeLineArtForExport(rawLineArt)
 
 exportCanvas.drawBitmap(
     exportLineArt,
