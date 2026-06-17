@@ -79,7 +79,7 @@ private fun showStickerGallery() {
     }
 
 val testIcon = ImageView(this).apply {
-    setImageResource(R.drawable.ic_storybook)
+    setImageResource(R.drawable.ic_done_star)
 
     layoutParams = LinearLayout.LayoutParams(
         dp(96),
