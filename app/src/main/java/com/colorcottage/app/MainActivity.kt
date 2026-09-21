@@ -14,6 +14,7 @@ import java.util.ArrayDeque
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import androidx.core.content.FileProvider
+import androidx.core.content.ContextCompat
 
 class MainActivity : Activity() {
     private lateinit var canvas: ColoringCanvas
@@ -22,8 +23,13 @@ class MainActivity : Activity() {
     private val paletteButtons = mutableListOf<Button>()
 
 
-enum class ColoringPage(val title: String, val imageRes: Int) {
-    PUPPY("Puppy", R.drawable.animal_puppy),
+enum class ColoringPage(
+    val title: String,
+    val imageRes: Int,
+    val vectorRasterWidth: Int = 0,
+    val vectorRasterHeight: Int = 0
+) {
+    PUPPY("Puppy", R.drawable.animal_puppy_vector, 1198, 1313),
     KITTEN("Kitten", R.drawable.animal_kitten),
     BUNNY("Bunny", R.drawable.animal_bunny),
     DUCKLING("Duckling", R.drawable.animal_duckling),
@@ -201,8 +207,26 @@ private fun makeColorButton(color: Int): Button {
     }
 }
 
-private fun makeGalleryThumbnail(page: ColoringPage): Bitmap {
+private fun loadPageArtwork(page: ColoringPage): Bitmap {
+    if (page.vectorRasterWidth > 0 && page.vectorRasterHeight > 0) {
+        val drawable = ContextCompat.getDrawable(this, page.imageRes)
+            ?: error("Unable to load artwork for ${page.title}")
+        val bitmap = Bitmap.createBitmap(
+            page.vectorRasterWidth,
+            page.vectorRasterHeight,
+            Bitmap.Config.ARGB_8888
+        )
+        val bitmapCanvas = Canvas(bitmap)
+        drawable.setBounds(0, 0, bitmap.width, bitmap.height)
+        drawable.draw(bitmapCanvas)
+        return bitmap
+    }
+
     return BitmapFactory.decodeResource(resources, page.imageRes)
+}
+
+private fun makeGalleryThumbnail(page: ColoringPage): Bitmap {
+    return loadPageArtwork(page)
 }
 private fun makeWhiteTransparent(source: Bitmap): Bitmap {
     val output = source.copy(Bitmap.Config.ARGB_8888, true)
@@ -687,7 +711,7 @@ class ColoringCanvas(
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         if (w <= 0 || h <= 0) return
 
-        val rawLineArt = BitmapFactory.decodeResource(resources, page.imageRes)
+        val rawLineArt = loadPageArtwork()
         lineArtBitmap = makeWhiteTransparent(rawLineArt)
         colorBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
         colorBitmap?.eraseColor(Color.TRANSPARENT)
@@ -732,6 +756,24 @@ private fun makeLineArtForExport(source: Bitmap): Bitmap {
 
     return output
 }
+
+    private fun loadPageArtwork(): Bitmap {
+        if (page.vectorRasterWidth > 0 && page.vectorRasterHeight > 0) {
+            val drawable = ContextCompat.getDrawable(appContext, page.imageRes)
+                ?: error("Unable to load artwork for ${page.title}")
+            val bitmap = Bitmap.createBitmap(
+                page.vectorRasterWidth,
+                page.vectorRasterHeight,
+                Bitmap.Config.ARGB_8888
+            )
+            val bitmapCanvas = Canvas(bitmap)
+            drawable.setBounds(0, 0, bitmap.width, bitmap.height)
+            drawable.draw(bitmapCanvas)
+            return bitmap
+        }
+
+        return BitmapFactory.decodeResource(resources, page.imageRes)
+    }
 
     private fun makeWhiteTransparent(source: Bitmap): Bitmap {
         val output = source.copy(Bitmap.Config.ARGB_8888, true)
@@ -934,7 +976,7 @@ fun exportBitmap(): Bitmap {
         }
     }
 
-val rawLineArt = BitmapFactory.decodeResource(resources, page.imageRes)
+val rawLineArt = loadPageArtwork()
 val exportLineArt = makeLineArtForExport(rawLineArt)
 
 exportCanvas.drawBitmap(
