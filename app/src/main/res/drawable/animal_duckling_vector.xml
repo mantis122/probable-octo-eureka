@@ -19,4 +19,20 @@
         android:pathData="M-6,960H6v11H-6Zm1199,41h12v12h-12Z"
         android:fillColor="#000000"
     />
+
+    <path
+        android:pathData="M367,584c7,28,71,32,85-2m133,8c7,28,80,30,95-2"
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#000000"
+        android:strokeWidth="6"
+        android:strokeLineCap="round"
+    />
+
+    <path
+        android:pathData="M659,1027c17,5,42,7,59-1"
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#000000"
+        android:strokeWidth="6"
+        android:strokeLineCap="round"
+    />
 </vector>
