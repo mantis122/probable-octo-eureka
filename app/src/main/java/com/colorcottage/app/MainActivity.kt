@@ -30,9 +30,9 @@ enum class ColoringPage(
     val vectorRasterHeight: Int = 0
 ) {
     PUPPY("Puppy", R.drawable.animal_puppy_vector, 1198, 1313),
-    KITTEN("Kitten", R.drawable.animal_kitten),
-    BUNNY("Bunny", R.drawable.animal_bunny),
-    DUCKLING("Duckling", R.drawable.animal_duckling),
+    KITTEN("Kitten", R.drawable.animal_kitten_vector, 1206, 1304),
+    BUNNY("Bunny", R.drawable.animal_bunny_vector, 1198, 1313),
+    DUCKLING("Duckling", R.drawable.animal_duckling_vector, 1199, 1312),
     PONY("Pony", R.drawable.animal_pony),
     DINOSAUR("Baby Dinosaur", R.drawable.animal_dinosaur),
 
