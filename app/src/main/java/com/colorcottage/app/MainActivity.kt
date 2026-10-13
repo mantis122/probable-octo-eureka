@@ -16,6 +16,52 @@ import android.net.Uri
 import androidx.core.content.FileProvider
 import androidx.core.content.ContextCompat
 
+/** Rasterize VectorDrawable at a crisp size while preserving its viewport aspect ratio. */
+private fun rasterizeAnimalArtwork(
+    context: Context,
+    resourceId: Int,
+    vectorWidth: Int,
+    vectorHeight: Int
+): Bitmap {
+    if (vectorWidth <= 0) {
+        return BitmapFactory.decodeResource(context.resources, resourceId)
+            ?: error("Unable to decode animal artwork resource $resourceId")
+    }
+
+    val drawable = ContextCompat.getDrawable(context, resourceId)
+        ?: error("Unable to load animal vector resource $resourceId")
+
+    var width = vectorWidth
+    var height = vectorHeight
+    if (width == 1 && height == 1) {
+        // The converter may emit 24dp intrinsic sizes. Use the actual SVG viewport
+        // instead so landscape and portrait animals keep their original proportions.
+        val androidNs = "http://schemas.android.com/apk/res/android"
+        var viewportWidth = 0f
+        var viewportHeight = 0f
+        context.resources.getXml(resourceId).use { parser ->
+            while (parser.eventType != org.xmlpull.v1.XmlPullParser.START_TAG &&
+                parser.eventType != org.xmlpull.v1.XmlPullParser.END_DOCUMENT) {
+                parser.next()
+            }
+            viewportWidth = parser.getAttributeValue(androidNs, "viewportWidth")?.toFloatOrNull() ?: 0f
+            viewportHeight = parser.getAttributeValue(androidNs, "viewportHeight")?.toFloatOrNull() ?: 0f
+        }
+        require(viewportWidth > 0f && viewportHeight > 0f) {
+            "Missing viewport dimensions for animal vector $resourceId"
+        }
+        val maxSide = 1313f
+        val scale = maxSide / maxOf(viewportWidth, viewportHeight)
+        width = (viewportWidth * scale).toInt().coerceAtLeast(1)
+        height = (viewportHeight * scale).toInt().coerceAtLeast(1)
+    }
+
+    val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+    drawable.setBounds(0, 0, width, height)
+    drawable.draw(Canvas(bitmap))
+    return bitmap
+}
+
 class MainActivity : Activity() {
     private lateinit var canvas: ColoringCanvas
     private var currentPage = ColoringPage.PUPPY
@@ -33,22 +79,22 @@ enum class ColoringPage(
     KITTEN("Kitten", R.drawable.animal_kitten_vector, 1206, 1304),
     BUNNY("Bunny", R.drawable.animal_bunny_vector, 1198, 1313),
     DUCKLING("Duckling", R.drawable.animal_duckling_vector, 1199, 1312),
-    PONY("Pony", R.drawable.animal_pony),
-    DINOSAUR("Baby Dinosaur", R.drawable.animal_dinosaur),
+    PONY("Pony", R.drawable.animal_pony_vector, 1, 1),
+    DINOSAUR("Baby Dinosaur", R.drawable.animal_dinosaur_vector, 1, 1),
 
-    LAMB("Lamb", R.drawable.animal_lamb),
-    PIGLET("Piglet", R.drawable.animal_piglet),
-    CHICK("Chick", R.drawable.animal_chick),
-    CALF("Calf", R.drawable.animal_calf),
+    LAMB("Lamb", R.drawable.animal_lamb_vector, 1, 1),
+    PIGLET("Piglet", R.drawable.animal_piglet_vector, 1, 1),
+    CHICK("Chick", R.drawable.animal_chick_vector, 1, 1),
+    CALF("Calf", R.drawable.animal_calf_vector, 1, 1),
 
-    KOALA("Koala Joey", R.drawable.animal_koala),
-    OTTER("Otter Pup", R.drawable.animal_otter),
-    HEDGEHOG("Hedgehog", R.drawable.animal_hedgehog),
-    RACCOON("Raccoon Kit", R.drawable.animal_raccoon),
-    FOX("Fox Cub", R.drawable.animal_fox),
-    BEAR("Bear Cub", R.drawable.animal_bear),
-    TURTLE("Turtle", R.drawable.animal_turtle),
-    PANDA("Panda",R.drawable.animal_panda)
+    KOALA("Koala Joey", R.drawable.animal_koala_vector, 1, 1),
+    OTTER("Otter Pup", R.drawable.animal_otter_vector, 1, 1),
+    HEDGEHOG("Hedgehog", R.drawable.animal_hedgehog_vector, 1, 1),
+    RACCOON("Raccoon Kit", R.drawable.animal_raccoon_vector, 1, 1),
+    FOX("Fox Cub", R.drawable.animal_fox_vector, 1, 1),
+    BEAR("Bear Cub", R.drawable.animal_bear_vector, 1, 1),
+    TURTLE("Turtle", R.drawable.animal_turtle_vector, 1, 1),
+    PANDA("Panda", R.drawable.animal_panda_vector, 1, 1)
 }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -207,23 +253,8 @@ private fun makeColorButton(color: Int): Button {
     }
 }
 
-private fun loadPageArtwork(page: ColoringPage): Bitmap {
-    if (page.vectorRasterWidth > 0 && page.vectorRasterHeight > 0) {
-        val drawable = ContextCompat.getDrawable(this, page.imageRes)
-            ?: error("Unable to load artwork for ${page.title}")
-        val bitmap = Bitmap.createBitmap(
-            page.vectorRasterWidth,
-            page.vectorRasterHeight,
-            Bitmap.Config.ARGB_8888
-        )
-        val bitmapCanvas = Canvas(bitmap)
-        drawable.setBounds(0, 0, bitmap.width, bitmap.height)
-        drawable.draw(bitmapCanvas)
-        return bitmap
-    }
-
-    return BitmapFactory.decodeResource(resources, page.imageRes)
-}
+private fun loadPageArtwork(page: ColoringPage): Bitmap =
+    rasterizeAnimalArtwork(this, page.imageRes, page.vectorRasterWidth, page.vectorRasterHeight)
 
 private fun makeGalleryThumbnail(page: ColoringPage): Bitmap {
     return loadPageArtwork(page)
@@ -757,23 +788,8 @@ private fun makeLineArtForExport(source: Bitmap): Bitmap {
     return output
 }
 
-    private fun loadPageArtwork(): Bitmap {
-        if (page.vectorRasterWidth > 0 && page.vectorRasterHeight > 0) {
-            val drawable = ContextCompat.getDrawable(appContext, page.imageRes)
-                ?: error("Unable to load artwork for ${page.title}")
-            val bitmap = Bitmap.createBitmap(
-                page.vectorRasterWidth,
-                page.vectorRasterHeight,
-                Bitmap.Config.ARGB_8888
-            )
-            val bitmapCanvas = Canvas(bitmap)
-            drawable.setBounds(0, 0, bitmap.width, bitmap.height)
-            drawable.draw(bitmapCanvas)
-            return bitmap
-        }
-
-        return BitmapFactory.decodeResource(resources, page.imageRes)
-    }
+    private fun loadPageArtwork(): Bitmap =
+        rasterizeAnimalArtwork(appContext, page.imageRes, page.vectorRasterWidth, page.vectorRasterHeight)
 
     private fun makeWhiteTransparent(source: Bitmap): Bitmap {
         val output = source.copy(Bitmap.Config.ARGB_8888, true)
