@@ -741,6 +741,9 @@ class ColoringCanvas(
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         if (w <= 0 || h <= 0) return
+        zoom = 1f
+        panX = 0f
+        panY = 0f
 
         val rawLineArt = loadPageArtwork()
         lineArtBitmap = makeWhiteTransparent(rawLineArt)
@@ -751,20 +754,27 @@ class ColoringCanvas(
         loadProgress()
     }
 
+    // Zoom changes only the display; coloring and saved pixels stay in view coordinates.
+    private var zoom = 1f
+    private var panX = 0f
+    private var panY = 0f
+    private var gestureActive = false
+    private var previousSpan = 0f
+    private var previousFocusX = 0f
+    private var previousFocusY = 0f
+    private var lastTapTime = 0L
+    private var lastTapX = 0f
+    private var lastTapY = 0f
+
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-
-        colorBitmap?.let {
-            canvas.drawBitmap(it, 0f, 0f, null)
-        }
-
-        currentPath?.let { path ->
-            currentPaint?.let { paint ->
-                canvas.drawPath(path, paint)
-            }
-        }
-
+        canvas.save()
+        canvas.translate(panX, panY)
+        canvas.scale(zoom, zoom)
+        colorBitmap?.let { canvas.drawBitmap(it, 0f, 0f, null) }
+        currentPath?.let { path -> currentPaint?.let { canvas.drawPath(path, it) } }
         drawPage(canvas)
+        canvas.restore()
     }
 
 private fun makeLineArtForExport(source: Bitmap): Bitmap {
@@ -839,22 +849,97 @@ private fun makeLineArtForExport(source: Bitmap): Bitmap {
     canvas.drawBitmap(bitmap, null, imageRect, null)
 }
 
-    override fun onTouchEvent(event: MotionEvent): Boolean {
-        val x = event.x
-        val y = event.y
+    private fun clampPan() {
+        // Never allow the entire page to disappear off-screen.
+        panX = panX.coerceIn(width * (1f - zoom), 0f)
+        panY = panY.coerceIn(height * (1f - zoom), 0f)
+    }
 
-        when (tool) {
-            Tool.BRUSH -> handleBrush(event, x, y)
-            Tool.BUCKET -> {
-                if (event.action == MotionEvent.ACTION_DOWN) {
-                    saveUndoState()
-                    bucketFill(x.toInt(), y.toInt(), paintColor)
-                    saveProgress()
-                    invalidate()
-                }
+    private fun resetZoom() {
+        zoom = 1f
+        panX = 0f
+        panY = 0f
+        invalidate()
+    }
+
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        val action = event.actionMasked
+        if (action == MotionEvent.ACTION_DOWN) {
+            parent?.requestDisallowInterceptTouchEvent(true)
+            gestureActive = false
+            val now = event.eventTime
+            val doubleTap = now - lastTapTime < 320L &&
+                kotlin.math.abs(event.x - lastTapX) < 65f &&
+                kotlin.math.abs(event.y - lastTapY) < 65f
+            lastTapTime = now
+            lastTapX = event.x
+            lastTapY = event.y
+            if (doubleTap) {
+                currentPath = null
+                currentPaint = null
+                resetZoom()
+                lastTapTime = 0L
+                return true
             }
         }
 
+        if (action == MotionEvent.ACTION_POINTER_DOWN && event.pointerCount >= 2) {
+            // Discard an unfinished stroke rather than painting during a pinch.
+            currentPath = null
+            currentPaint = null
+            gestureActive = true
+            val dx = event.getX(1) - event.getX(0)
+            val dy = event.getY(1) - event.getY(0)
+            previousSpan = kotlin.math.hypot(dx, dy).coerceAtLeast(1f)
+            previousFocusX = (event.getX(0) + event.getX(1)) / 2f
+            previousFocusY = (event.getY(0) + event.getY(1)) / 2f
+            invalidate()
+            return true
+        }
+
+        if (action == MotionEvent.ACTION_MOVE && event.pointerCount >= 2) {
+            val dx = event.getX(1) - event.getX(0)
+            val dy = event.getY(1) - event.getY(0)
+            val span = kotlin.math.hypot(dx, dy).coerceAtLeast(1f)
+            val fx = (event.getX(0) + event.getX(1)) / 2f
+            val fy = (event.getY(0) + event.getY(1)) / 2f
+            val newZoom = (zoom * span / previousSpan).coerceIn(1f, 3f)
+            val localX = (previousFocusX - panX) / zoom
+            val localY = (previousFocusY - panY) / zoom
+            zoom = newZoom
+            panX = fx - localX * zoom
+            panY = fy - localY * zoom
+            clampPan()
+            previousSpan = span
+            previousFocusX = fx
+            previousFocusY = fy
+            invalidate()
+            return true
+        }
+
+        if (action == MotionEvent.ACTION_POINTER_UP) {
+            gestureActive = true
+            return true
+        }
+        if (gestureActive) {
+            if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+                gestureActive = false
+            }
+            return true
+        }
+
+        val x = (event.x - panX) / zoom
+        val y = (event.y - panY) / zoom
+        when (tool) {
+            Tool.BRUSH -> handleBrush(event, x, y)
+            Tool.BUCKET -> if (action == MotionEvent.ACTION_DOWN &&
+                x >= 0f && x < width && y >= 0f && y < height) {
+                saveUndoState()
+                bucketFill(x.toInt(), y.toInt(), paintColor)
+                saveProgress()
+                invalidate()
+            }
+        }
         return true
     }
 
