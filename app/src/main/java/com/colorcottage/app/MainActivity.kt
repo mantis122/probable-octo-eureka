@@ -759,6 +759,10 @@ class ColoringCanvas(
     private var panX = 0f
     private var panY = 0f
     private var gestureActive = false
+    private var bucketTapPending = false
+    private var bucketDownX = 0f
+    private var bucketDownY = 0f
+    private val bucketTapSlop = android.view.ViewConfiguration.get(context).scaledTouchSlop.toFloat()
     private var previousSpan = 0f
     private var previousFocusX = 0f
     private var previousFocusY = 0f
@@ -867,6 +871,7 @@ private fun makeLineArtForExport(source: Bitmap): Bitmap {
         if (action == MotionEvent.ACTION_DOWN) {
             parent?.requestDisallowInterceptTouchEvent(true)
             gestureActive = false
+            bucketTapPending = false
             val now = event.eventTime
             val doubleTap = now - lastTapTime < 320L &&
                 kotlin.math.abs(event.x - lastTapX) < 65f &&
@@ -887,6 +892,7 @@ private fun makeLineArtForExport(source: Bitmap): Bitmap {
             // Discard an unfinished stroke rather than painting during a pinch.
             currentPath = null
             currentPaint = null
+            bucketTapPending = false
             gestureActive = true
             val dx = event.getX(1) - event.getX(0)
             val dy = event.getY(1) - event.getY(0)
@@ -918,6 +924,7 @@ private fun makeLineArtForExport(source: Bitmap): Bitmap {
         }
 
         if (action == MotionEvent.ACTION_POINTER_UP) {
+            bucketTapPending = false
             gestureActive = true
             return true
         }
@@ -932,12 +939,30 @@ private fun makeLineArtForExport(source: Bitmap): Bitmap {
         val y = (event.y - panY) / zoom
         when (tool) {
             Tool.BRUSH -> handleBrush(event, x, y)
-            Tool.BUCKET -> if (action == MotionEvent.ACTION_DOWN &&
-                x >= 0f && x < width && y >= 0f && y < height) {
-                saveUndoState()
-                bucketFill(x.toInt(), y.toInt(), paintColor)
-                saveProgress()
-                invalidate()
+            Tool.BUCKET -> when (action) {
+                MotionEvent.ACTION_DOWN -> {
+                    // Wait for finger release: a second finger may turn this into a pinch.
+                    bucketDownX = event.x
+                    bucketDownY = event.y
+                    bucketTapPending = true
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    if (kotlin.math.hypot(event.x - bucketDownX, event.y - bucketDownY) > bucketTapSlop) {
+                        bucketTapPending = false
+                    }
+                }
+                MotionEvent.ACTION_UP -> {
+                    if (bucketTapPending &&
+                        kotlin.math.hypot(event.x - bucketDownX, event.y - bucketDownY) <= bucketTapSlop &&
+                        x >= 0f && x < width && y >= 0f && y < height) {
+                        saveUndoState()
+                        bucketFill(x.toInt(), y.toInt(), paintColor)
+                        saveProgress()
+                        invalidate()
+                    }
+                    bucketTapPending = false
+                }
+                MotionEvent.ACTION_CANCEL -> bucketTapPending = false
             }
         }
         return true
